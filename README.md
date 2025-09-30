@@ -33,29 +33,24 @@ Data sources:
 ## 🧩 Modules
 Each group member is responsible for one module:
 
-1. **Venues Directory**  
+1. **Venues Directory**  (Roben)
    - Model: Venue (name, city, address, contact, website/socials).  
-   - Features: List + filter by city, search by name.  
-   - Davin
+   - Features: List + filter by city, search by name.   
 
-2. **User Profiles & Authentication**  
+2. **User Profiles & Authentication**  (Bagas)
    - User registration/login system.  
    - Profile page with saved/bookmarked venues.  
-   - Bagas
 
-3. **Articles/News**  
-   - Model: Article (title, content, author, date).  
+3. **Articles/News**  (Davin)
+   - Model: Article (title, content, cateory, author, date).  
    - Features: Article listing + detail page.
-   - Roben
 
-4. **Comments & Community Interaction**  
+4. **Comments & Community Interaction**  (Elision)
    - AJAX-based commenting system for articles/venues.  
-   - Elision
 
-5. **Events/Tournaments**  
+5. **Events/Tournaments**  (Radith)
    - Model: Event (name, date, location, description).  
    - Features: Show upcoming padel events in Java island.  
-   - Radith
 
 ---
 
