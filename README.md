@@ -54,20 +54,24 @@ Each group member is responsible for one module:
 
 5. **Events/Tournaments**  
    - Model: Event (name, date, location, description).  
-   - Features: Show upcoming padel events in Jabodetabek.  
+   - Features: Show upcoming padel events in Java island.  
    - Radith
 
 ---
 
 ## 👥 User Roles
-- **Guest**: Can view venues and read articles.  
-- **Owner/Author**: Can comment on articles, bookmark venues.  
-- **Admin**: Can add/edit venues, manage articles, and moderate content.  
+- **Guest**: Can comment and give rating on articles, venues.
+- **Owner/Author**: Can add/edit/delete own venues, add/edit/delete own articles, and add/edit/delete own fun match.
+- **Admin**: Can add/edit/delete all venues, add/edit/delete all articles, add/edit/delete tournament, and moderate content.  
 
 ---
 
 ## 🚀 Deployment
-- **PWS Deployment Link**: *(to be added after deployment)*  
+- **PWS Deployment Link**: *https://pbp.cs.ui.ac.id/roben.joseph/padelinaja*  
 
 ---
 
+## 🎨 Design (Optional Bonus)
+- **Figma/Canva Design Link**: *https://www.figma.com/design/xFBIqDvxI7vpdOzg797Bpq/PadelinAja?node-id=0-1&t=mNJyioSrtGSJRorF-1*
+
+---
