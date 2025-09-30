@@ -1,13 +1,13 @@
 # Padelin Aja 
 
 ## 📖 Description
-Padel is one of the fastest growing sports in Indonesia, especially in the Jabodetabek area.  
+Padel is one of the fastest growing sports in Indonesia, especially in the the island of Java area.  
 This website is designed as a **community hub for padel enthusiasts**, combining a **directory of padel venues** with a **community news section**.  
 
 Users can:
 - Browse venues and find their contact details (address, phone, website/socials).  
-- Read and share articles/news about padel in Indonesia.  
-- Join as members to interact with the community (e.g., commenting on articles, bookmarking venues).  
+- Read and share articles/news about padel in Java island.  
+- Join as members to interact with the community (e.g., commenting on articles, commenting on venues, rating).  
 
 The project is built using the **Django framework**, applying **Models, Views, Templates, Forms, AJAX**, and responsive design principles.  
 
