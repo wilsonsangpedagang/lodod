@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Padel In Aja — Main</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 0; padding: 0; background:#f7f7f9; color:#222; }
+    header { background:#0b6; color:#fff; padding:16px; }
+    .container { max-width:960px; margin:24px auto; padding:16px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+    nav a { color:#023; margin-right:12px; text-decoration:none; font-weight:600; }
+    form input, form select { padding:6px 8px; margin-right:8px; }
+    .venue { padding:12px; border-bottom:1px solid #eee; }
+    .muted { color:#666; font-size:0.9rem; }
+    footer { text-align:center; color:#666; padding:12px 0; font-size:0.9rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Padel In Aja</h1>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <h2>Venues Directory</h2>
+
+    <section aria-labelledby="search">
+      <form method="get" action="">
+        <label for="q" class="muted">Search name:</label>
+        <input id="q" name="q" type="search" value="{{ request.GET.q|default:'' }}" placeholder="Search by venue name" />
+
+        <label for="city" class="muted">City:</label>
+        <select id="city" name="city">
+          <option value="">All cities</option>
+          {% for c in cities %}
+            <option value="{{ c }}" {% if request.GET.city == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+      </form>
+    </section>
+
+    <section aria-labelledby="list">
+      <h3 id="list">Results</h3>
+      {% if venues %}
+        <div>
+          {% for venue in venues %}
+            <article class="venue">
+              <strong>{{ venue.name }}</strong>
+              <div class="muted">{{ venue.city }} — {{ venue.address }}</div>
+              {% if venue.contact %}<div>Contact: {{ venue.contact }}</div>{% endif %}
+              {% if venue.website %}<div><a href="{{ venue.website }}" target="_blank" rel="noopener">Website / Social</a></div>{% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">No venues found. Add some venues or adjust your filters.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <small>Padel In Aja — Venues directory (Roben). Built for demo.</small>
+    </div>
+  </footer>
+</body>
+</html>
