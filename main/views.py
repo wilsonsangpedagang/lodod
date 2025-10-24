@@ -3,17 +3,26 @@ from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from main.forms import VenueForm, ArticleForm, EventForm
 from main.models import Venue, Article, Events
+<<<<<<< HEAD
+=======
 from main.models import Venue, Article, Events, Rating
+>>>>>>> tkpbp/radit
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+<<<<<<< HEAD
+from django.db.models import Avg, Q
+from django.contrib.contenttypes.models import ContentType
+from main.models import Rating
+=======
 from django.db.models import Avg
 from django.contrib.contenttypes.models import ContentType
 from main.models import Rating
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.db import models
+>>>>>>> tkpbp/radit
 
 
 def show_main(request):
@@ -82,7 +91,10 @@ def show_main(request):
         'class': 'PBP A',
         'items': items,
         'user': request.user,
+<<<<<<< HEAD
+=======
         'active_page': 'home', # Added for navbar highlighting
+>>>>>>> tkpbp/radit
     }
     return render(request, "main.html", context)
 
@@ -110,11 +122,16 @@ def show_venue(request, id):
     context = {
         'venue': venue,
         'avg_rating': round(avg_rating, 1),
+<<<<<<< HEAD
+=======
         'active_page': 'venues', # Added for navbar highlighting
+>>>>>>> tkpbp/radit
     }
 
     return render(request, "venue_detail.html", context)
 
+<<<<<<< HEAD
+=======
 # In main/views.py
 
 def show_venues(request):
@@ -166,6 +183,7 @@ def show_venues(request):
         'search_price': price,
     }
     return render(request, "venues.html", context)
+>>>>>>> tkpbp/radit
 
 # Article views
 def create_article(request):
@@ -180,6 +198,16 @@ def create_article(request):
     context = {'form': form}
     return render(request, "create_article.html", context)
 
+<<<<<<< HEAD
+def article_list_view(request):
+    all_articles = Article.objects.all().order_by('-published_date')
+    context = {
+        'articles': all_articles,
+    }
+    return render(request, 'article_page.html', context)
+
+=======
+>>>>>>> tkpbp/radit
 def show_article(request, id):
     article = get_object_or_404(Article, pk=id)
     avg_rating = Rating.objects.filter(
@@ -204,7 +232,63 @@ def ajax_article_form(request):
         html = render_to_string('partials/article_form.html', {'form': form}, request=request)
         return HttpResponse(html)
 
+<<<<<<< HEAD
+def ajax_article_form(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            article = form.save(commit=False)
+            if request.user.is_authenticated:
+                article.user = request.user
+            article.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors.as_json()})
+    else:
+        form = ArticleForm()
+        try:
+            html = render_to_string('partials/article_form.html', {'form': form}, request=request)
+            return JsonResponse({'html': html})
+        except Exception as e:
+            print(f"Error rendering article form: {e}")
+            return JsonResponse({'error': 'Could not load form template.'}, status=500)
+
 # Event views
+def event_page(request):
+    queryset = Events.objects.all().order_by('-date') 
+
+    search_query = request.GET.get('q', '')
+    city_filter = request.GET.get('city', '')
+    price_filter = request.GET.get('price', '')
+
+    if search_query:
+        queryset = queryset.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+
+    if city_filter:
+        queryset = queryset.filter(venue__city__iexact=city_filter)
+
+    if price_filter:
+        if price_filter == '<100k':
+            queryset = queryset.filter(price__lt=100000)
+        elif price_filter == '100k-200k':
+            queryset = queryset.filter(price__gte=100000, price__lte=200000)
+        elif price_filter == '>200k':
+            queryset = queryset.filter(price__gt=200000)
+
+    context = {
+        'events': queryset,
+        'search_query': search_query,
+        'city_filter': city_filter,
+        'price_filter': price_filter,
+    }
+    return render(request, 'event_page.html', context)
+
+=======
+# Event views
+>>>>>>> tkpbp/radit
 def create_event(request):
     form = EventForm(request.POST or None)
 
@@ -240,12 +324,21 @@ def ajax_event_form(request):
             event = form.save(commit=False)
             event.user = request.user
             event.save()
+<<<<<<< HEAD
+            return JsonResponse({'success': True})
+        return JsonResponse({'success': False, 'errors': form.errors.as_json()})
+    else:
+        form = EventForm()
+        html = render_to_string('partials/event_form.html', {'form': form}, request=request)
+        return JsonResponse({'html': html})
+=======
             return JsonResponse({'success': True})  # ✅ Correct placement
         return JsonResponse({'success': False, 'errors': form.errors.as_text()})
     else:
         form = EventForm()
         html = render_to_string('partials/event_form.html', {'form': form}, request=request)
         return HttpResponse(html)
+>>>>>>> tkpbp/radit
 
 
 def ajax_venue_form(request):
@@ -262,6 +355,22 @@ def ajax_venue_form(request):
         html = render_to_string('partials/venue_form.html', {'form': form}, request=request)
         return HttpResponse(html)
 
+<<<<<<< HEAD
+def ajax_event_detail(request, id):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            event = get_object_or_404(Events, id=id) 
+            html = render_to_string(
+                'partials/event_detail_snippet.html',
+                {'event': event, 'user': request.user} # Tambahkan 'user'
+            )
+            return JsonResponse({'html': html})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+=======
+>>>>>>> tkpbp/radit
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
@@ -330,7 +439,15 @@ def ajax_edit(request, type, id):
             return JsonResponse({'success': True})
         return JsonResponse({'success': False, 'errors': form.errors.as_text()})
     else:
+<<<<<<< HEAD
+        context = {
+            'form': form_class(instance=obj),
+            'form_action_url': f"/ajax_edit/{type}/{id}/"
+        }
+        html = render_to_string(f'partials/{type}_form.html', context, request=request)
+=======
         html = render_to_string(f'partials/{type}_form.html', {'form': form_class(instance=obj)}, request=request)
+>>>>>>> tkpbp/radit
         return JsonResponse({'html': html})
 
 @csrf_exempt
