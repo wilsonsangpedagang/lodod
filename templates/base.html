@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tailwind (CDN for quick dev; replace with your build if you have one) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Favicon (optional) -->
+  <link rel="icon" href="{% static 'images/logo.png' %}">
+
+  {% block meta %}{% endblock meta %}
+  <title>{% block title %}PadelinAja{% endblock title %}</title>
+</head>
+
+<body class="bg-white text-gray-900">
+  {% include 'navbar.html' %}
+
+  <main class="mx-auto max-w-7xl px-6 py-6">
+    {% block content %}{% endblock content %}
+  </main>
+
+  {% block scripts %}{% endblock scripts %}
+</body>
+</html>

@@ -1,0 +1,68 @@
+{% load static %}
+<nav class="bg-transparent">
+  <div class="mx-auto max-w-7xl pl-6 pr-16 py-2 flex items-center">
+    <!-- Left: Logo (kept large) -->
+    <a href="{% url 'main:show_main' %}" class="shrink-0 flex items-center justify-center">
+      <img src="{% static 'images/logo.png' %}" alt="PadelinAja"
+           class="h-28 w-28 md:h-28 md:w-28 object-contain select-none" />
+    </a>
+
+    <!-- Middle: Nav — moved slightly RIGHT -->
+    <div class="ml-14 md:ml-20 flex-1">
+      <div class="hidden md:flex space-x-7 text-[14px] md:text-[14px] font-medium leading-snug">
+        <a href="{% url 'main:show_main' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and not request.GET.tab %}nav-link--active{% endif %}">
+          Home
+        </a>
+        <a href="{% url 'main:show_main' %}?tab=venues"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and request.GET.tab == 'venues' %}nav-link--active{% endif %}">
+          Venues
+        </a>
+        <a href="{% url 'main:show_main' %}?tab=blogs"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and request.GET.tab == 'blogs' %}nav-link--active{% endif %}">
+          Blogs
+        </a>
+        <a href="{% url 'main:show_main' %}?tab=events"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and request.GET.tab == 'events' %}nav-link--active{% endif %}">
+          Events
+        </a>
+        <a href="{% url 'main:about' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'about' %}nav-link--active{% endif %}">
+          About
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Auth — nudged LEFT more -->
+    <div class="flex items-center space-x-5 -translate-x-6 md:-translate-x-8">
+      {% if user.is_authenticated %}
+        <a href="{% url 'main:logout' %}" class="text-purple-700 font-medium text-[14px] hover:underline">
+          Log Out
+        </a>
+      {% else %}
+        <a href="{% url 'main:login' %}" class="text-purple-700 font-medium text-[14px] hover:underline">
+          Log In
+        </a>
+        <a href="{% url 'main:register' %}"
+           class="bg-yellow-400 hover:bg-yellow-500 text-purple-800 font-semibold text-[13.5px] md:text-[14px] px-4 py-1.5 rounded-full flex items-center gap-2 transition">
+          <span>Join Us</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <style>
+    .nav-link {
+      position: relative; display: inline-block; padding-bottom: 5px;
+      color: #111827; text-decoration: none; transition: color .15s ease-in-out; line-height: 1.2;
+    }
+    .nav-link:hover { color: #4b5563; }
+    .nav-link--active { color: #7c3aed; }
+    .nav-link--active::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; width: 100%; background-color: #7c3aed;
+    }
+  </style>
+</nav>

@@ -1,0 +1,135 @@
+{% load static %}
+
+<article class="bg-white rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+         data-type="{{ item.type }}" data-id="{{ item.id }}">
+  
+  <!-- Thumbnail -->
+  <div class="aspect-[16/9] relative overflow-hidden">
+    {% if item.thumbnail %}
+      <img src="{{ item.thumbnail }}" 
+           alt="{% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}" 
+           class="w-full h-full object-cover">
+    {% else %}
+      <div class="w-full h-full bg-gray-200"></div>
+    {% endif %}
+
+    <!-- Category / Badge -->
+    <div class="absolute top-3 left-3">
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-600 text-white">
+        {% if item.type == 'article' and item.category %}
+          {{ item.category }}
+        {% elif item.type == 'venue' and item.city %}
+          {{ item.city }}
+        {% elif item.type == 'event' and item.date %}
+          {{ item.date|date:"M j, Y" }}
+        {% endif %}
+      </span>
+    </div>
+
+    <!-- Type Badge (top-right corner) -->
+    <div class="absolute top-3 right-3 flex space-x-2">
+      <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+        {{ item.type }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="p-5">
+    <!-- Date / Metadata -->
+    <div class="flex items-center text-sm text-gray-500 mb-3">
+      <time datetime="{% if item.type == 'article' %}{{ item.published_date|date:'c' }}{% elif item.type == 'event' %}{{ item.date|date:'c' }}{% endif %}">
+        {% if item.type == 'article' %}{{ item.published_date|date:"M j, Y" }}{% elif item.type == 'event' %}{{ item.date|date:"M j, Y" }}{% endif %}
+      </time>
+      {% if item.user %}
+        <span class="mx-2">•</span>
+        <span>by {{ item.user.username }}</span>
+      {% endif %}
+    </div>
+
+    <!-- Title -->
+    <h3 class="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 leading-tight">
+      <a 
+        {% if item.type == 'article' %}href="{% url 'main:show_article' item.id %}"
+        {% elif item.type == 'venue' %}href="{% url 'main:show_venue' item.id %}"
+        {% elif item.type == 'event' %}href="{% url 'main:show_event' item.id %}"
+        {% endif %}
+        class="hover:text-green-600 transition-colors">
+        {% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}
+      </a>
+    </h3>
+
+    <!-- Description -->
+    <p class="text-gray-600 text-sm leading-relaxed line-clamp-3 mb-4">
+      {% if item.type == 'article' and item.content %}
+        {{ item.content|truncatewords:20 }}
+      {% elif item.type == 'event' and item.description %}
+        {{ item.description|truncatewords:20 }}
+      {% elif item.type == 'venue' %}
+        {% if item.address %}<span class="block">📍 {{ item.address }}</span>{% endif %}
+        {% if item.contact %}<span class="block">📞 {{ item.contact }}</span>{% endif %}
+        {% if item.website %}
+          <span class="block">🔗 
+            <a href="{{ item.website }}" target="_blank" class="text-green-600 hover:underline">
+              {{ item.website|truncatechars:30 }}
+            </a>
+          </span>
+        {% endif %}
+      {% endif %}
+      {% if item.type == 'event' and item.venue %}
+        <span class="block mt-1 text-gray-500 text-sm">📍 Venue: {{ item.venue.name }}</span>
+      {% endif %}
+    </p>
+
+    {% if item.avg_rating %}
+      <div class="flex items-center mb-2">
+        <span class="text-yellow-500">
+          {% for i in "12345"|slice:":5" %}
+            {% if forloop.counter <= item.avg_rating|floatformat:0 %}
+              ★
+            {% else %}
+              ☆
+            {% endif %}
+          {% endfor %}
+        </span>
+        <span class="ml-2 text-sm text-gray-600">{{ item.avg_rating }}/5</span>
+      </div>
+    {% endif %}
+
+
+    <!-- Action Buttons -->
+    {% if user.is_authenticated and item.user == user %}
+      <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+        <a 
+          {% if item.type == 'article' %}href="{% url 'main:show_article' item.id %}"
+          {% elif item.type == 'venue' %}href="{% url 'main:show_venue' item.id %}"
+          {% elif item.type == 'event' %}href="{% url 'main:show_event' item.id %}"
+          {% endif %}
+          class="text-green-600 hover:text-green-700 font-medium text-sm transition-colors">
+          Read more
+        </a>
+        <div class="flex space-x-2">
+          <button class="edit-btn text-gray-600 hover:text-gray-700 text-sm transition-colors"
+                  data-type="{{ item.type }}" data-id="{{ item.id }}">
+            Edit
+          </button>
+          <button class="delete-btn text-red-600 hover:text-red-700 text-sm transition-colors"
+                  data-type="{{ item.type }}" data-id="{{ item.id }}">
+            Delete
+          </button>
+        </div>
+      </div>
+    {% else %}
+      <div class="pt-4 border-t border-gray-100">
+        <a 
+          {% if item.type == 'article' %}href="{% url 'main:show_article' item.id %}"
+          {% elif item.type == 'venue' %}href="{% url 'main:show_venue' item.id %}"
+          {% elif item.type == 'event' %}href="{% url 'main:show_event' item.id %}"
+          {% endif %}
+          class="text-green-600 hover:text-green-700 font-medium text-sm transition-colors">
+          Read more →
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</article>
