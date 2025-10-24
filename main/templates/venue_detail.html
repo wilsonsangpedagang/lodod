@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
@@ -90,3 +91,210 @@
     <script src="{% static 'js/rating.js' %}"></script>
 </body>
 </html>
+=======
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %} {% block content %}
+<style>
+    .detail-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+    }
+
+    /* --- Image Gallery --- */
+    .image-gallery {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        gap: 16px;
+    }
+    .gallery-main-image {
+        grid-column: 1 / -1; /* Span both columns */
+        width: 100%;
+        height: 450px;
+        object-fit: cover;
+        border-radius: 12px;
+        background-color: #eee;
+    }
+    .gallery-thumb {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        background-color: #eee;
+    }
+
+    /* --- Main Content --- */
+    .venue-info h1 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin-top: 24px;
+        margin-bottom: 8px;
+    }
+    .venue-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 1rem;
+        color: #555;
+        margin-bottom: 24px;
+    }
+    .venue-rating {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-weight: 600;
+    }
+    .venue-rating .star {
+        color: #FFC107;
+        font-size: 1.2rem;
+    }
+    .venue-location {
+        font-weight: 600;
+    }
+
+    .venue-section {
+        margin-top: 32px;
+    }
+    .venue-section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 8px;
+    }
+    .facility-list {
+        list-style: none;
+        padding: 0;
+        font-size: 1.1rem;
+        color: #333;
+    }
+    .facility-list li {
+        padding: 8px 0;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 20px; /* Sticks to the top */
+    }
+    .sidebar-card .price {
+        font-size: 0.9rem;
+        color: #777;
+    }
+    .sidebar-card .price-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 20px;
+    }
+    .book-now-btn {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        background: #6A1B9A; /* Purple */
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    /* --- Contact Info Section (As requested) --- */
+    .contact-info {
+        list-style: none;
+        padding: 0;
+    }
+    .contact-info li {
+        margin-bottom: 12px;
+        font-size: 1rem;
+        color: #333;
+    }
+    .contact-info li a {
+        color: #6A1B9A;
+        font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+        .sidebar-card {
+            grid-row: 1; /* Move sidebar to top on mobile */
+            margin-bottom: 32px;
+        }
+    }
+</style>
+
+<div class="detail-container">
+    <div class="detail-grid">
+        
+        <main class="venue-content">
+            <div class="image-gallery">
+                <img src="{{ venue.image_url|default_if_none:'https://via.placeholder.com/800x450' }}" alt="{{ venue.name }}" class="gallery-main-image">
+                {% if venue.image_url_2 %}<img src="{{ venue.image_url_2 }}" alt="{{ venue.name }} 2" class="gallery-thumb">{% endif %}
+                {% if venue.image_url_3 %}<img src="{{ venue.image_url_3 }}" alt="{{ venue.name }} 3" class="gallery-thumb">{% endif %}
+                {% if venue.image_url_4 %}<img src="{{ venue.image_url_4 }}" alt="{{ venue.name }} 4" class="gallery-thumb">{% endif %}
+                {% if venue.image_url_5 %}<img src="{{ venue.image_url_5 }}" alt="{{ venue.name }} 5" class="gallery-thumb">{% endif %}
+            </div>
+
+            <div class="venue-info">
+                <h1>{{ venue.name }}</h1>
+                <div class="venue-meta">
+                    {% if avg_rating > 0 %}
+                    <span class="venue-rating"><span class="star">★</span> {{ avg_rating|floatformat:1 }}/5</span>
+                    {% endif %}
+                    <span class="venue-location">📍 {{ venue.city }}</span>
+                </div>
+                
+                <div class="venue-section">
+                    <h2>Facility</h2>
+                    <ul class="facility-list">
+                        {% if venue.facilities %}
+                            {% for facility in venue.facilities|split_by_comma %}
+                                <li>{{ facility|striptags }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No facility information provided.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="venue-section">
+                    <h2>Contact & Details</h2>
+                    <ul class="contact-info">
+                        <li><strong>Address:</strong> {{ venue.address }}</li>
+                        <li><strong>Contact:</strong> {{ venue.contact|default:'N/A' }}</li>
+                        <li><strong>Website:</strong> <a href="{{ venue.website|default:'#' }}" target="_blank">{{ venue.website|default:'N/A' }}</a></li>
+                    </ul>
+                </div>
+                
+                </div>
+        </main>
+        
+        <aside class="sidebar">
+            <div class="sidebar-card">
+                <div class="price">Start From</div>
+                <div class="price-value">{{ venue.price_range|default:'N/A' }}</div>
+                <button class="book-now-btn">Book Now</button>
+            </div>
+        </aside>
+
+    </div>
+</div>
+{% endblock content %}
+>>>>>>> tkpbp/radit
