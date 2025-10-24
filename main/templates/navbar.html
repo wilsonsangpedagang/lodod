@@ -1,138 +1,68 @@
-<<<<<<< HEAD
-<nav class="navbar" style="background:#0b6; color:#fff; padding:12px 0;">
-  <div class="container" style="display:flex;align-items:center;justify-content:space-between;max-width:960px;margin:0 auto;">
-    <div style="display:flex;align-items:center;gap:24px;">
-      <a href="{% url 'main:show_main' %}" style="color:#fff;font-weight:700;text-decoration:none;font-size:1.1em;">Home</a>
-      <a href="{% url 'main:show_main' %}#categories" style="color:#fff;font-weight:500;text-decoration:none;">All Categories</a>
-      <a href="{% url 'main:about' %}" style="color:#fff;font-weight:500;text-decoration:none;">About</a>
-    </div>
-    <div>
-      {% if user.is_authenticated %}
-        <span style="font-weight:600; color:#fff;">Hello, {{ user.username }} !</span>
-        <form action="{% url 'main:logout' %}" method="post" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit" style="background:#fff;color:#0b6;border:none;padding:6px 16px;border-radius:4px;cursor:pointer;font-weight:600;">Logout</button>
-        </form>
-      {% else %}
-        <a href="{% url 'main:login' %}" style="background:#fff;color:#0b6;border:none;padding:6px 16px;border-radius:4px;text-decoration:none;font-weight:600;">Login</a>
-      {% endif %}
-    </div>
-  </div>
-</nav>
-=======
 {% load static %}
-<style>
-  .navbar {
-    background: #fff;
-    padding: 16px 32px;
-    border-bottom: 1px solid #eee;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  }
-  .navbar-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .navbar-left {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-  }
-  .navbar-logo {
-    font-weight: 700;
-    font-size: 1.5rem;
-    color: #333;
-    text-decoration: none;
-  }
-  .navbar-links {
-    display: flex;
-    gap: 24px;
-  }
-  .navbar-links a {
-    text-decoration: none;
-    color: #555;
-    font-weight: 500;
-    padding-bottom: 4px; /* Added for active border */
-    border-bottom: 2px solid transparent; /* Added for active border */
-  }
-  .navbar-links a:hover {
-    color: #6A1B9A; /* Purple */
-    text-decoration: none;
-  }
-  
-  /* This highlights the active page link */
-  .navbar-links a.active {
-    color: #6A1B9A;
-    font-weight: 700;
-    border-bottom: 2px solid #6A1B9A;
-  }
+<nav class="bg-transparent">
+  <div class="mx-auto max-w-7xl pl-6 pr-16 py-2 flex items-center">
+    <!-- Left: Logo (kept large) -->
+    <a href="{% url 'main:show_main' %}" class="shrink-0 flex items-center justify-center">
+      <img src="{% static 'images/logo.png' %}" alt="PadelinAja"
+           class="h-28 w-28 md:h-28 md:w-28 object-contain select-none" />
+    </a>
 
-  .navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .navbar-right a, .navbar-right button {
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 8px 16px;
-    border-radius: 999px; /* Pill shape */
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .navbar-login {
-    color: #6A1B9A; /* Purple */
-    background: transparent;
-  }
-  .navbar-login:hover {
-    background: #f4e9fa;
-  }
-  .navbar-join {
-    color: #111;
-    background: #FFED2C; /* Yellow */
-  }
-  .navbar-join:hover {
-    filter: brightness(0.95);
-  }
-  .navbar-logout {
-    color: #888;
-    background: #f0f0f0;
-  }
-  .navbar-logout:hover {
-    background: #e0e0e0;
-  }
-</style>
-
-<nav class="navbar">
-  <div class="navbar-container">
-    <div class="navbar-left">
-      <a href="{% url 'main:show_main' %}" class="navbar-logo">
-        PadelInAja
-      </a>
-      <div class="navbar-links">
-        <a href="{% url 'main:show_main' %}" class="{% if active_page == 'home' %}active{% endif %}">Home</a>
-        
-        <a href="{% url 'main:show_venues' %}" class="{% if active_page == 'venues' %}active{% endif %}">Venues</a>
-        
-        <a href="#" class="{% if active_page == 'blogs' %}active{% endif %}">Blogs</a>
-        <a href="#" class="{% if active_page == 'events' %}active{% endif %}">Events</a>
+    <!-- Middle: Nav — moved slightly RIGHT -->
+    <div class="ml-14 md:ml-20 flex-1">
+      <div class="hidden md:flex space-x-7 text-[14px] md:text-[14px] font-medium leading-snug">
+        <a href="{% url 'main:show_main' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and not request.GET.tab %}nav-link--active{% endif %}">
+          Home
+        </a>
+        <a href="{% url 'main:show_main' %}?tab=venues"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and request.GET.tab == 'venues' %}nav-link--active{% endif %}">
+          Venues
+        </a>
+        <a href="{% url 'main:show_main' %}?tab=blogs"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and request.GET.tab == 'blogs' %}nav-link--active{% endif %}">
+          Blogs
+        </a>
+        <a href="{% url 'main:show_main' %}?tab=events"
+           class="nav-link {% if request.resolver_match.url_name == 'show_main' and request.GET.tab == 'events' %}nav-link--active{% endif %}">
+          Events
+        </a>
+        <a href="{% url 'main:about' %}"
+           class="nav-link {% if request.resolver_match.url_name == 'about' %}nav-link--active{% endif %}">
+          About
+        </a>
       </div>
     </div>
-    <div class="navbar-right">
+
+    <!-- Right: Auth — nudged LEFT more -->
+    <div class="flex items-center space-x-5 -translate-x-6 md:-translate-x-8">
       {% if user.is_authenticated %}
-        <span style="font-weight: 500; color: #333;">Hello, {{ user.username }}</span>
-        <form action="{% url 'main:logout' %}" method="post" style="display: inline;">
-          {% csrf_token %}
-          <button type="submit" class="navbar-logout">Logout</button> </form>
+        <a href="{% url 'main:logout' %}" class="text-purple-700 font-medium text-[14px] hover:underline">
+          Log Out
+        </a>
       {% else %}
-        <a href="{% url 'main:login' %}" class="navbar-login">Log In</a>
-        <a href="{% url 'main:register' %}" class="navbar-join">Join Us →</a>
+        <a href="{% url 'main:login' %}" class="text-purple-700 font-medium text-[14px] hover:underline">
+          Log In
+        </a>
+        <a href="{% url 'main:register' %}"
+           class="bg-yellow-400 hover:bg-yellow-500 text-purple-800 font-semibold text-[13.5px] md:text-[14px] px-4 py-1.5 rounded-full flex items-center gap-2 transition">
+          <span>Join Us</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
       {% endif %}
     </div>
   </div>
+
+  <style>
+    .nav-link {
+      position: relative; display: inline-block; padding-bottom: 5px;
+      color: #111827; text-decoration: none; transition: color .15s ease-in-out; line-height: 1.2;
+    }
+    .nav-link:hover { color: #4b5563; }
+    .nav-link--active { color: #7c3aed; }
+    .nav-link--active::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; width: 100%; background-color: #7c3aed;
+    }
+  </style>
 </nav>
->>>>>>> tkpbp/radit
