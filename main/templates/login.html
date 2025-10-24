@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    body { background: #f7f7f9; font-family: system-ui, sans-serif; }
+    .container { max-width: 400px; margin: 60px auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 2px 8px #0002; }
+    h2 { margin-top: 0; }
+    label { display: block; margin-bottom: 6px; font-weight: 500; }
+    input { width: 100%; padding: 8px; margin-bottom: 16px; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; padding: 10px; background: #0b6; color: #fff; border: none; border-radius: 4px; font-size: 1em; cursor: pointer; }
+    .error { color: #b00; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm" method="post" action="/login/">
+      <div class="error" id="loginError"></div>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required />
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div style="margin-top:18px;text-align:center;">
+      <span>Don't have an account?</span>
+      <a href="{% url 'main:register' %}" style="color:#0b6;font-weight:600;text-decoration:underline;">Register here</a>
+    </div>
+  </div>
+  <script>
+    document.getElementById('loginForm').onsubmit = function(e) {
+      e.preventDefault();
+      var errorDiv = document.getElementById('loginError');
+      errorDiv.textContent = '';
+      var data = new FormData(this);
+      fetch(this.action, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: data
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          window.location.href = '/';
+        } else {
+          errorDiv.textContent = res.errors || 'Login failed.';
+        }
+      });
+    };
+  </script>
+</body>
+</html>

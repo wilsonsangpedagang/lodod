@@ -1,70 +1,261 @@
-<!DOCTYPE html>
+<!DOCTYPE html
+{% extends 'base.html' %}
+{% block content %}
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Padel In Aja — Main</title>
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 0; padding: 0; background:#f7f7f9; color:#222; }
-    header { background:#0b6; color:#fff; padding:16px; }
-    .container { max-width:960px; margin:24px auto; padding:16px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
-    nav a { color:#023; margin-right:12px; text-decoration:none; font-weight:600; }
-    form input, form select { padding:6px 8px; margin-right:8px; }
-    .venue { padding:12px; border-bottom:1px solid #eee; }
-    .muted { color:#666; font-size:0.9rem; }
-    footer { text-align:center; color:#666; padding:12px 0; font-size:0.9rem; }
+    /* Reset & Basic Styles */
+    body { 
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; 
+      margin: 0; 
+      padding: 0; 
+      background: #FEF9F9; /* Warna latar belakang utama */
+      color: #333; 
+    }
+    .container { 
+      max-width: 1100px; 
+      margin: 24px auto; 
+      padding: 16px; 
+    }
+    
+    /* Hero Section - DIUBAH SESUAI PERMINTAAN TEKS */
+    .hero {
+      display: flex;
+      align-items: center;
+      padding: 60px 40px;
+      background: #FFFFFF; /* 3. Warna belakang Join Community harusnya putih */
+      position: relative;
+      min-height: auto; /* Dihapus min-height 400px */
+    }
+    /* Dihapus: hero::before (gradien) */
+    /* Dihapus: background-image */
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 500px;
+    }
+    .hero-content h1 {
+      font-size: 3.5rem; 
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.1;
+      color: #000000; /* 1. warna Join Communitynya harusnya item */
+    }
+    .hero-content h1 .highlight {
+      color: #6A1B9A; /* 2. warna P| harusnya ungu */
+    }
+    .hero-content p {
+      font-size: 1.1rem;
+      margin: 16px 0 24px 0;
+      color: #000000; /* Teks harus hitam agar terbaca di bg putih */
+    }
+    .hero-buttons a {
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-right: 12px;
+      display: inline-block;
+    }
+    .hero-buttons .btn-primary {
+      background-color: #6A1B9A; 
+      color: #fff;
+    }
+    .hero-buttons .btn-secondary {
+      background-color: #FFED2C; 
+      color: #000000; 
+    }
+    
+    /* Section Headings */
+    h2.section-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin: 40px 0 24px 0;
+      color: #6A1B9A; /* 4 & 5. Top Venues & Upcoming ungu */
+    }
+    
+    /* Venues Layout */
+    .venues-layout {
+      display: grid;
+      grid-template-columns: 2fr 1fr; 
+      gap: 32px;
+    }
+
+    /* Card Grid (Left Column) */
+    .card-grid { 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 24px; 
+    }
+    
+    /* Venue Card Styles */
+    .venue-card {
+      background: #fff; 
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #eee;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      transition: box-shadow 0.2s;
+    }
+    .venue-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    }
+    .venue-card .card-image img {
+      width: 100%;
+      height: 200px; 
+      object-fit: cover;
+      display: block;
+    }
+    .venue-card .card-content { 
+      padding: 16px; 
+    }
+    .venue-card .card-meta { 
+      font-size: 0.85rem; 
+      color: #666; 
+      margin-bottom: 8px; 
+    }
+    .venue-card .card-title { 
+      font-size: 1.15rem; 
+      font-weight: 600; 
+      color: #000000; 
+      margin: 0 0 8px 0; 
+      line-height: 1.3;
+    }
+    .venue-card .card-description { 
+      font-size: 0.9rem; 
+      color: #555; 
+      line-height: 1.5; 
+    }
+
+    /* Venues Sidebar (Right Column) */
+    .venues-sidebar .sidebar-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .venues-sidebar .sidebar-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+    .venues-sidebar .sidebar-item-content {
+      flex: 1;
+    }
+    .venues-sidebar .sidebar-item-meta {
+      font-size: 0.8rem;
+      color: #666; 
+      margin-bottom: 4px;
+    }
+    .venues-sidebar .sidebar-item-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #000000; 
+      line-height: 1.3;
+    }
+    
+    /* Upcoming Match Section */
+    .upcoming-match h2 span {
+      color: #FFED2C; /* Teks "Match" tetap kuning */
+    }
+    .upcoming-match-box {
+      border: 1px solid #e0e0e0;
+      background: #fff; 
+      border-radius: 8px;
+      min-height: 300px;
+      margin-bottom: 32px;
+    }
+    
+    /* Footer */
+    footer { 
+      text-align: center; 
+      color: #666; 
+      padding: 24px 0; 
+      font-size: 0.9rem; 
+      border-top: 1px solid #eee;
+      margin-top: 40px;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <h1>Padel In Aja</h1>
+  {% include 'navbar.html' %}
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Join the Community. <span class="highlight">P|</span></h1>
+      <p>Discover top padel venues near you, book matches in seconds, and connect with passionate players across Java.</p>
+      <div class="hero-buttons">
+        <a href="#" class="btn-primary">Explore Courts</a>
+        <a href="#" class="btn-secondary">Padel Updates!</a>
+      </div>
     </div>
-  </header>
+  </section>
 
   <main class="container" role="main">
-    <h2>Venues Directory</h2>
 
-    <section aria-labelledby="search">
-      <form method="get" action="">
-        <label for="q" class="muted">Search name:</label>
-        <input id="q" name="q" type="search" value="{{ request.GET.q|default:'' }}" placeholder="Search by venue name" />
-
-        <label for="city" class="muted">City:</label>
-        <select id="city" name="city">
-          <option value="">All cities</option>
-          {% for c in cities %}
-            <option value="{{ c }}" {% if request.GET.city == c %}selected{% endif %}>{{ c }}</option>
+    <section class="top-venues">
+      <h2 class="section-title">Top Venues</h2>
+      
+      <div class="venues-layout">
+        <div id="cardGrid" class="card-grid">
+          {% for item in items %}
+            {% include 'card.html' with item=item %}
           {% endfor %}
-        </select>
-
-        <button type="submit">Filter</button>
-      </form>
-    </section>
-
-    <section aria-labelledby="list">
-      <h3 id="list">Results</h3>
-      {% if venues %}
-        <div>
-          {% for venue in venues %}
-            <article class="venue">
-              <strong>{{ venue.name }}</strong>
-              <div class="muted">{{ venue.city }} — {{ venue.address }}</div>
-              {% if venue.contact %}<div>Contact: {{ venue.contact }}</div>{% endif %}
-              {% if venue.website %}<div><a href="{{ venue.website }}" target="_blank" rel="noopener">Website / Social</a></div>{% endif %}
-            </article>
-          {% endfor %}
+          {% if not items %}
+            {% include 'card.html' with item=None %}
+            {% include 'card.html' with item=None %}
+          {% endif %}
         </div>
-      {% else %}
-        <p class="muted">No venues found. Add some venues or adjust your filters.</p>
-      {% endif %}
+        
+        <aside class="venues-sidebar">
+          <div class="sidebar-item">
+            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 3">
+            <div class="sidebar-item-content">
+              <div class="sidebar-item-meta">08-11-2021 | Category</div>
+              <div class="sidebar-item-title">Partiality on or continuing in particular principles.</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 4">
+            <div class="sidebar-item-content">
+              <div class="sidebar-item-meta">08-11-2021 | Category</div>
+              <div class="sidebar-item-title">Do believing oh disposing to supported allowance wa.</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 5">
+            <div class="sidebar-item-content">
+              <div class="sidebar-item-meta">08-11-2021 | Category</div>
+              <div class="sidebar-item-title">Village did removed enjoyed explain nor ham law.</div>
+            </div>
+          </div>
+          <div class="sidebar-item">
+            <img src="https://i.imgur.com/E9qA21D.jpeg" alt="Ski Image 6">
+            <div class="sidebar-item-content">
+              <div class="sidebar-item-meta">08-11-2021 | Category</div>
+              <div class="sidebar-item-title">Securing as informed declared or margaret.</div>
+            </div>
+          </div>
+        </aside>
+      </div>
     </section>
+
+    <section class="upcoming-match">
+      <h2 class="section-title">Upcoming <span>Match</span></h2>
+      <div class="upcoming-match-box">
+        </div>
+    </section>
+
   </main>
 
   <footer>
-    <div class="container">
-      <small>Padel In Aja — Venues directory (Roben). Built for demo.</small>
-    </div>
+    <small>Copyright @PadelinAja. All Rights Reserved.</small>
   </footer>
+
 </body>
 </html>
+{% endblock content %}
