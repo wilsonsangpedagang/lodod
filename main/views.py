@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from main.forms import VenueForm, ArticleForm, EventForm
+from main.models import Venue, Article, Events
 from main.models import Venue, Article, Events, Rating
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db.models import Avg
 from django.contrib.contenttypes.models import ContentType
+from main.models import Rating
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.db import models
@@ -34,7 +36,7 @@ def show_main(request):
             'created_at': a.published_date,
             'thumbnail': getattr(a, 'image_url', None),
             'user': getattr(a, 'user', None),
-            'detail_url': f"/articles/{a.id}/",
+            'detail_url': f"/article/{a.id}/",
             'avg_rating': round(avg_rating, 1),
         })
     for v in venues:
@@ -52,7 +54,7 @@ def show_main(request):
             'website': v.website,
             'thumbnail': getattr(v, 'image_url', None),
             'user': getattr(v, 'user', None),
-            'detail_url': f"/venues/{v.id}/",
+            'detail_url': f"/venue/{v.id}/",
             'avg_rating': round(avg_rating, 1),
         })
     for e in events:
@@ -69,7 +71,7 @@ def show_main(request):
             'venue': e.venue,
             'thumbnail': getattr(e, 'image_url', None),
             'user': getattr(e, 'user', None),
-            'detail_url': f"/events/{e.id}/",
+            'detail_url': f"/event/{e.id}/",
             'avg_rating': round(avg_rating, 1),
         })
     # Sort by created_at/date descending
@@ -254,10 +256,7 @@ def ajax_venue_form(request):
             venue.user = request.user
             venue.save()
             return JsonResponse({'success': True})  # ✅ Correct placement
-        
-        # --- THIS WAS THE BROKEN LINE (FIXED) ---
         return JsonResponse({'success': False, 'errors': form.errors.as_text()})
-
     else:
         form = VenueForm()
         html = render_to_string('partials/venue_form.html', {'form': form}, request=request)
@@ -305,7 +304,7 @@ def ajax_delete(request, type, id):
     model = model_map.get(type)
     if not model:
         return JsonResponse({'success': False, 'errors': 'Invalid type.'})
-    obj = get_object_or_44(model, pk=id)
+    obj = get_object_or_404(model, pk=id)
     if hasattr(obj, 'user') and obj.user != request.user:
         return JsonResponse({'success': False, 'errors': 'Permission denied.'})
     obj.delete()
@@ -357,7 +356,7 @@ def ajax_cards(request):
                 'created_at': a.published_date,
                 'thumbnail': getattr(a, 'thumbnail', None) or getattr(a, 'image_url', None),
                 'user': a.user,  # ✅ actual user object
-                'detail_url': f"/articles/{a.id}/",
+                'detail_url': f"/article/{a.id}/",
             })
 
     # Venues
@@ -373,7 +372,7 @@ def ajax_cards(request):
                 'website': v.website,
                 'thumbnail': getattr(v, 'thumbnail', None) or getattr(v, 'image_url', None),
                 'user': v.user,  # ✅ actual user object
-                'detail_url': f"/venues/{v.id}/",
+                'detail_url': f"/venue/{v.id}/",
             })
 
     # Events
@@ -388,7 +387,7 @@ def ajax_cards(request):
                 'venue': e.venue,
                 'thumbnail': getattr(e, 'thumbnail', None) or getattr(e, 'image_url', None),
                 'user': e.user,  # ✅ actual user object
-                'detail_url': f"/events/{e.id}/",
+                'detail_url': f"/event/{e.id}/",
             })
 
     # Sort newest first
@@ -405,6 +404,11 @@ def ajax_cards(request):
 def about_view(request):
     return render(request, "about.html")
 
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib.contenttypes.models import ContentType
+from .models import Rating
 
 @require_POST
 @login_required
