@@ -1,0 +1,376 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register · PadelinAja</title>
+
+  <!-- Lato font -->
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f6f6f7; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+      --purple:#5E2CA5; --yellow:#FFE955; --ring:#e5e7eb;
+      --ok:#10b981; --err:#ef4444; --input:#f9fafb;
+      --shadow:0 10px 25px rgba(0,0,0,.06); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:"Lato",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .page{
+      max-width:1040px;
+      margin:44px auto;
+      padding:0 18px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:32px;
+      align-items:stretch;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--ring);
+      border-radius:var(--radius);
+      padding:36px 34px 28px;
+      box-shadow:var(--shadow);
+    }
+
+    /* Header: logo left, text right */
+    .header-row{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      margin-bottom:6px;
+    }
+    .header-row .logo{
+      width:64px;
+      height:64px;
+      border-radius:12px;
+      box-shadow:0 4px 18px rgba(0,0,0,.12);
+      flex:0 0 auto;
+    }
+    .heading{
+      display:flex;
+      flex-direction:column;
+    }
+    .heading h1{
+      margin:0 0 2px 0;
+      font-size:30px;
+      font-weight:400;   /* thinner text */
+      letter-spacing:.2px;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:14px;
+    }
+    .sub a{
+      color:var(--purple);
+      text-decoration:none;
+      font-weight:700;
+    }
+    .sub a:hover{text-decoration:underline}
+
+    .field{margin:14px 0}
+    .label{display:block;font-size:13px;margin-bottom:6px;color:#374151;font-weight:700}
+    .input-wrap{position:relative}
+    .input{
+      width:100%;
+      border:1px solid var(--ring);
+      background:var(--input);
+      padding:14px 48px 14px 14px;
+      border-radius:12px;
+      font-size:15px;
+      outline:none;
+      transition:border-color .15s ease,box-shadow .15s ease;
+    }
+    .input:focus{border-color:var(--purple);box-shadow:0 0 0 4px rgba(94,44,165,.12)}
+    .toggle{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      background:transparent;
+      border:0;
+      font-size:13px;
+      color:var(--muted);
+      cursor:pointer;
+      padding:2px 6px;
+    }
+
+    .rules{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+      margin:10px 2px 4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .rule{display:flex;align-items:center;gap:6px}
+    .dot{
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#cdd1d6;
+      display:inline-block;
+    }
+    .rule.ok .dot{background:var(--ok)}
+    .rule.err .dot{background:var(--err)}
+
+    .btn{
+      width:100%;
+      padding:14px 18px;
+      border-radius:28px;
+      border:none;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:.2px;
+      font-size:16px;
+      transition:transform .03s ease,filter .2s ease,box-shadow .3s ease;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn-primary{
+      background:var(--purple);
+      color:var(--yellow);
+      box-shadow:0 8px 18px rgba(94,44,165,.22);
+    }
+    .btn-primary:hover{filter:brightness(1.03)}
+    .btn-google{
+      background:#fff;
+      color:#111827;
+      border:1px solid var(--ring);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-weight:800;
+    }
+    .google-logo{width:18px;height:18px}
+    .divider{
+      margin:18px 0 14px;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:#9ca3af;
+      font-weight:700;
+    }
+    .divider .line{
+      height:1px;
+      background:var(--ring);
+      flex:1;
+    }
+    .note{font-size:12px;color:var(--muted);margin-top:8px}
+
+    .right{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      pointer-events:none;
+      user-select:none;
+    }
+    .players{
+      max-width:520px;
+      width:100%;
+      aspect-ratio:3/4;
+      position:relative;
+      background:radial-gradient(120px 120px at 85% 12%, rgba(94,44,165,.12), transparent 60%),
+                 radial-gradient(140px 140px at 65% 62%, rgba(255,233,85,.18), transparent 60%);
+      border-radius:24px;
+    }
+    .players img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      filter:drop-shadow(0 18px 30px rgba(0,0,0,.18));
+    }
+
+    .toast{
+      position:fixed;
+      top:18px;
+      right:18px;
+      padding:12px 14px;
+      border-radius:12px;
+      color:#fff;
+      background:#ef4444;
+      box-shadow:var(--shadow);
+      display:none;
+      z-index:50;
+      font-weight:700;
+    }
+    .toast.ok{background:var(--ok)}
+
+    @media (max-width:920px){
+      .page{grid-template-columns:1fr}
+      .right{order:-1}
+      .players{max-width:620px}
+    }
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast"></div>
+
+  <main class="page">
+    <!-- LEFT: form card -->
+    <section class="card">
+      <div class="header-row">
+        <img class="logo" src="{% static 'main/img/PadelinAjaLogo.png' %}" alt="PadelinAja logo">
+        <div class="heading">
+          <h1>Welcome to the Community!</h1>
+          <div class="sub">Already have an account? <a href="{% url 'main:login' %}">Log in</a></div>
+        </div>
+      </div>
+
+      <form id="registerForm" autocomplete="off">
+        {% csrf_token %}
+
+        <div class="field">
+          <label class="label" for="username">Username</label>
+          <div class="input-wrap">
+            <input class="input" id="username" name="username" type="text" minlength="3" required placeholder="e.g. padel_pro99">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="email">Email</label>
+          <div class="input-wrap">
+            <input class="input" id="email" name="email" type="email" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="password">Password</label>
+          <div class="input-wrap">
+            <input class="input" id="password" name="password" type="password" required>
+            <button type="button" class="toggle" data-target="password">Show</button>
+          </div>
+          <div class="rules" id="rules">
+            <div class="rule" data-rule="length"><span class="dot"></span>Use 8 or more characters</div>
+            <div class="rule" data-rule="upper"><span class="dot"></span>One Uppercase character</div>
+            <div class="rule" data-rule="digit"><span class="dot"></span>One number</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="confirm">Confirm Password</label>
+          <div class="input-wrap">
+            <input class="input" id="confirm" type="password" required>
+            <button type="button" class="toggle" data-target="confirm">Show</button>
+          </div>
+          <div class="note" id="matchNote"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create an account</button>
+
+        <div class="divider"><div class="line"></div>OR<div class="line"></div></div>
+
+        <button type="button" class="btn btn-google" id="googleBtn">
+          <svg class="google-logo" viewBox="0 0 533.5 544.3" aria-hidden="true">
+            <path d="M533.5 278.4c0-18.5-1.7-36.2-4.9-53.4H272v101h147.4c-6.3 34-25 62.8-53.5 82v68h86.5c50.4-46.4 80.1-114.7 80.1-197.6z"/>
+            <path d="M272 544.3c72.4 0 133.2-23.8 177.6-64.3l-86.5-68c-24 16.1-54.8 25.7-91.1 25.7-69.9 0-129.2-47.2-150.4-110.7h-89.7v69.5c44 87.3 134.4 147.8 240.1 147.8z"/>
+            <path d="M121.6 326.9c-10.3-30.8-10.3-64.1 0-94.9V162.5h-89.7c-39.4 78.8-39.4 170.6 0 249.4l89.7-69.5z"/>
+            <path d="M272 107.7c37.2-.6 72.7 13 99.7 37.6l74.7-74.7C404.9 24.6 345 0 272 0 166.3 0 75.9 60.5 31.9 147.8l89.7 69.5C142.8 154.4 202.1 107.7 272 107.7z"/>
+          </svg>
+          Continue with Google
+        </button>
+      </form>
+    </section>
+
+    <!-- RIGHT: artwork -->
+    <aside class="right">
+      <div class="players">
+        <img src="{% static 'main/img/register.png' %}" alt="">
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const pwd = document.getElementById('password');
+    const confirmPwd = document.getElementById('confirm');
+    const matchNote = document.getElementById('matchNote');
+    const rules = {
+      length: function(v){ return v.length >= 8; },
+      upper:  function(v){ return /[A-Z]/.test(v); },
+      digit:  function(v){ return /\d/.test(v); }
+    };
+    function refreshRules(){
+      const v = pwd.value || "";
+      Object.entries(rules).forEach(function(pair){
+        const key = pair[0], fn = pair[1];
+        const ok = fn(v);
+        const el = document.querySelector('.rule[data-rule="' + key + '"]');
+        if (!el) return;
+        el.classList.toggle('ok', ok);
+        el.classList.toggle('err', !ok && v.length > 0);
+      });
+      const same = confirmPwd.value.length > 0 && confirmPwd.value === v;
+      matchNote.textContent = same ? "Passwords match ✓" : (confirmPwd.value ? "Passwords do not match" : "");
+      matchNote.style.color = same ? "var(--ok)" : "var(--muted)";
+    }
+    pwd.addEventListener('input', refreshRules);
+    confirmPwd.addEventListener('input', refreshRules);
+
+    document.querySelectorAll('.toggle').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const id = btn.getAttribute('data-target');
+        const input = document.getElementById(id);
+        const isPwd = input.type === 'password';
+        input.type = isPwd ? 'text' : 'password';
+        btn.textContent = isPwd ? 'Hide' : 'Show';
+      });
+    });
+
+    const toast = document.getElementById('toast');
+    function showToast(msg, ok){
+      toast.textContent = msg;
+      toast.className = 'toast' + (ok ? ' ok' : '');
+      toast.style.display = 'block';
+      setTimeout(function(){ toast.style.display = 'none'; }, 2600);
+    }
+
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+
+      const v = pwd.value;
+      if(!(rules.length(v) && rules.upper(v) && rules.digit(v))){
+        showToast('Please satisfy the password rules.', false);
+        return;
+      }
+      if(confirmPwd.value !== v){
+        showToast('Passwords do not match.', false);
+        return;
+      }
+
+      const fd = new FormData(form);
+      try{
+        const res = await fetch("{% url 'main:register' %}", { method:'POST', body:fd });
+        const data = await res.json();
+        if(data.success){
+          showToast('Account created — welcome!', true);
+          setTimeout(function(){ window.location.href = "{% url 'main:show_main' %}"; }, 600);
+        }else{
+          showToast(data.errors || 'Registration failed.', false);
+        }
+      }catch(err){
+        showToast('Network error. Try again.', false);
+      }
+    });
+
+    document.getElementById('googleBtn').addEventListener('click', function(){
+      showToast('Google sign-in is not configured.', false);
+    });
+
+    refreshRules();
+  </script>
+</body>
+</html>

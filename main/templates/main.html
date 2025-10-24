@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+{% extends 'base.html' %}
+{% block content %}
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -10,61 +12,228 @@
     .container { max-width:960px; margin:24px auto; padding:16px; background:#fff; border-radius:6px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
     nav a { color:#023; margin-right:12px; text-decoration:none; font-weight:600; }
     form input, form select { padding:6px 8px; margin-right:8px; }
-    .venue { padding:12px; border-bottom:1px solid #eee; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin: 32px 0; }
     .muted { color:#666; font-size:0.9rem; }
     footer { text-align:center; color:#666; padding:12px 0; font-size:0.9rem; }
+    /* Modal styles */
+    #publishModal { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1000; }
+    #publishModal .modal-content { background:#fff; max-width:400px; margin:60px auto; padding:24px; border-radius:8px; box-shadow:0 2px 8px #0002; position:relative; }
+    #closeModal { position:absolute; top:12px; right:16px; font-size:1.2em; background:none; border:none; cursor:pointer; }
+    #formMsg { margin-top:12px; color:#b00; }
+    /* Edit Modal styles */
+    #editModal { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:1001; }
+    #editModal .modal-content { background:#fff; max-width:600px; margin:60px auto; padding:24px; border-radius:8px; box-shadow:0 2px 8px #0002; position:relative; }
+    #closeEditModal { position:absolute; top:12px; right:16px; font-size:1.2em; background:none; border:none; cursor:pointer; }
   </style>
 </head>
 <body>
+  {% include 'navbar.html' %}
   <header>
-    <div class="container">
-      <h1>Padel In Aja</h1>
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <h1 style="margin-bottom:0;">Padel In Aja</h1>
+        <nav>
+          <span style="margin-right:12px; font-weight:600; color:#023;">Articles</span>
+          <span style="margin-right:12px; font-weight:600; color:#023;">Venues</span>
+          <span style="margin-right:12px; font-weight:600; color:#023;">Events</span>
+        </nav>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        {% if user.is_authenticated %}
+          <span style="font-weight:600; color:#0b6;">Hello, {{ user.username }}</span>
+          <form action="{% url 'main:logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" style="background:#0b6;color:#fff;border:none;padding:6px 16px;border-radius:4px;cursor:pointer;">Logout</button>
+          </form>
+        {% else %}
+          <a href="{% url 'main:login' %}" style="background:#0b6;color:#fff;border:none;padding:6px 16px;border-radius:4px;text-decoration:none;font-weight:600;">Login</a>
+        {% endif %}
+      </div>
     </div>
   </header>
 
   <main class="container" role="main">
-    <h2>Venues Directory</h2>
-
-    <section aria-labelledby="search">
-      <form method="get" action="">
-        <label for="q" class="muted">Search name:</label>
-        <input id="q" name="q" type="search" value="{{ request.GET.q|default:'' }}" placeholder="Search by venue name" />
-
-        <label for="city" class="muted">City:</label>
-        <select id="city" name="city">
-          <option value="">All cities</option>
-          {% for c in cities %}
-            <option value="{{ c }}" {% if request.GET.city == c %}selected{% endif %}>{{ c }}</option>
-          {% endfor %}
-        </select>
-
-        <button type="submit">Filter</button>
-      </form>
-    </section>
-
-    <section aria-labelledby="list">
-      <h3 id="list">Results</h3>
-      {% if venues %}
-        <div>
-          {% for venue in venues %}
-            <article class="venue">
-              <strong>{{ venue.name }}</strong>
-              <div class="muted">{{ venue.city }} — {{ venue.address }}</div>
-              {% if venue.contact %}<div>Contact: {{ venue.contact }}</div>{% endif %}
-              {% if venue.website %}<div><a href="{{ venue.website }}" target="_blank" rel="noopener">Website / Social</a></div>{% endif %}
-            </article>
-          {% endfor %}
-        </div>
-      {% else %}
-        <p class="muted">No venues found. Add some venues or adjust your filters.</p>
-      {% endif %}
-    </section>
+    {% if user.is_authenticated %}
+      <button id="publishBtn" style="margin:20px 0;padding:10px 24px;font-size:1.1em;">Publish Something</button>
+    {% endif %}
+    <h2>Recently Added</h2>
+    <label for="cardFilter">Show:</label>
+    <select id="cardFilter" style="margin-bottom:16px;">
+      <option value="all">All</option>
+      <option value="article">Article</option>
+      <option value="venue">Venue</option>
+      <option value="event">Event</option>
+    </select>
+    <div id="cardGrid" class="card-grid">
+      {% for item in items %}
+        {% include 'card.html' with item=item user=user %}
+      {% endfor %}
+    </div>
+    <!-- ...existing venue search/filter code can go below or be removed... -->
   </main>
+
+  <!-- Modal for publishing -->
+  <div id="publishModal">
+    <div class="modal-content">
+      <button id="closeModal">&times;</button>
+      <h2>Publish Something</h2>
+      <label for="categorySelect">Choose category:</label>
+      <select id="categorySelect" style="margin-bottom:16px;">
+        <option value="">-- Select --</option>
+        <option value="article">Article</option>
+        <option value="event">Event</option>
+        <option value="venue">Venue</option>
+      </select>
+      <div id="formContainer"></div>
+      <div id="formMsg"></div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.4);z-index:1001;">
+    <div class="modal-content">
+      <button id="closeEditModal" style="position:absolute;top:12px;right:16px;font-size:1.2em;background:none;border:none;cursor:pointer;">&times;</button>
+      <h2>Edit Item</h2>
+      <div id="editFormContainer"></div>
+      <div id="editFormMsg"></div>
+    </div>
+  </div>
 
   <footer>
     <div class="container">
       <small>Padel In Aja — Venues directory (Roben). Built for demo.</small>
     </div>
   </footer>
+
+  <script>
+  const modal = document.getElementById('publishModal');
+  const btn = document.getElementById('publishBtn');
+  const closeBtn = document.getElementById('closeModal');
+  const categorySelect = document.getElementById('categorySelect');
+  const formContainer = document.getElementById('formContainer');
+  const formMsg = document.getElementById('formMsg');
+  const cardFilter = document.getElementById('cardFilter');
+  const cardGrid = document.getElementById('cardGrid');
+
+  const editModal = document.getElementById('editModal');
+  const closeEditModal = document.getElementById('closeEditModal');
+  const editFormContainer = document.getElementById('editFormContainer');
+  const editFormMsg = document.getElementById('editFormMsg');
+
+  btn.onclick = () => { modal.style.display = 'block'; formContainer.innerHTML = ''; formMsg.textContent = ''; categorySelect.value = ''; }
+  closeBtn.onclick = () => { modal.style.display = 'none'; }
+  closeEditModal.onclick = () => { editModal.style.display = 'none'; }
+  window.onclick = e => {
+    if (e.target == modal) modal.style.display = 'none';
+    if (e.target == editModal) editModal.style.display = 'none';
+  };
+
+  categorySelect.onchange = function() {
+    formContainer.innerHTML = '';
+    formMsg.textContent = '';
+    if (!this.value) return;
+    fetch(`/ajax_form/${this.value}/`)
+      .then(r => r.text())
+      .then(html => { formContainer.innerHTML = html; attachFormHandler(); });
+  };
+
+  function attachFormHandler() {
+    const form = formContainer.querySelector('form');
+    if (!form) return;
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      formMsg.textContent = '';
+      const data = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: data
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          formMsg.style.color = '#080';
+          formMsg.textContent = 'Published successfully!';
+          setTimeout(() => { modal.style.display = 'none'; location.reload(); }, 1200);
+        } else {
+          formMsg.style.color = '#b00';
+          formMsg.textContent = res.errors || 'Error submitting form.';
+        }
+      });
+    };
+  }
+
+  cardFilter.onchange = function() {
+    fetch(`/ajax_cards/?type=${this.value}`)
+      .then(r => r.text())
+      .then(html => { cardGrid.innerHTML = html; attachCardActions(); });
+  };
+
+  function attachCardActions() {
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.onclick = function() {
+        editFormContainer.innerHTML = '';
+        editFormMsg.textContent = '';
+        editModal.style.display = 'block';
+        fetch(`/ajax_edit/${btn.dataset.type}/${btn.dataset.id}/`)
+          .then(r => r.json())
+          .then(res => {
+            if (res.html) {
+              editFormContainer.innerHTML = res.html;
+              attachEditFormHandler(btn.dataset.type, btn.dataset.id);
+            } else {
+              editFormMsg.textContent = res.errors || 'Error loading form.';
+            }
+          });
+      };
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.onclick = function() {
+        if (!confirm('Delete this item?')) return;
+        fetch(`/ajax_delete/${btn.dataset.type}/${btn.dataset.id}/`, {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        })
+        .then(r => r.json())
+        .then(res => {
+          if (res.success) {
+            btn.closest('.card').remove();
+          } else {
+            alert(res.errors || 'Delete failed.');
+          }
+        });
+      };
+    });
+  }
+
+  function attachEditFormHandler(type, id) {
+    const form = editFormContainer.querySelector('form');
+    if (!form) return;
+    form.onsubmit = function(e) {
+      e.preventDefault();
+      editFormMsg.textContent = '';
+      const data = new FormData(form);
+      fetch(`/ajax_edit/${type}/${id}/`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: data
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          editFormMsg.style.color = '#080';
+          editFormMsg.textContent = 'Updated successfully!';
+          setTimeout(() => { editModal.style.display = 'none'; location.reload(); }, 1200);
+        } else {
+          editFormMsg.style.color = '#b00';
+          editFormMsg.textContent = res.errors || 'Error updating item.';
+        }
+      });
+    };
+  }
+
+  attachCardActions();
+  </script>
 </body>
 </html>
+{% endblock content %}
