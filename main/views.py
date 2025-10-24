@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from main.forms import VenueForm, ArticleForm, EventForm
 from main.models import Venue, Article, Events
+from main.models import Venue, Article, Events, Rating
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
@@ -10,6 +11,9 @@ from django.utils import timezone
 from django.db.models import Avg
 from django.contrib.contenttypes.models import ContentType
 from main.models import Rating
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.db import models
 
 
 def show_main(request):
@@ -78,6 +82,7 @@ def show_main(request):
         'class': 'PBP A',
         'items': items,
         'user': request.user,
+        'active_page': 'home', # Added for navbar highlighting
     }
     return render(request, "main.html", context)
 
@@ -105,10 +110,62 @@ def show_venue(request, id):
     context = {
         'venue': venue,
         'avg_rating': round(avg_rating, 1),
+        'active_page': 'venues', # Added for navbar highlighting
     }
 
     return render(request, "venue_detail.html", context)
 
+# In main/views.py
+
+def show_venues(request):
+    # --- SEARCH LOGIC START ---
+    query = request.GET.get('q', '')
+    location = request.GET.get('location', '')
+    price = request.GET.get('price', '')
+
+    venue_list = Venue.objects.all()
+
+    if query:
+        venue_list = venue_list.filter(name__icontains=query) 
+    
+    if location:
+        venue_list = venue_list.filter(models.Q(city__icontains=location) | models.Q(address__icontains=location))
+
+    if price:
+        venue_list = venue_list.filter(price_range__icontains=price)
+        
+    # --- SEARCH LOGIC END ---
+
+    items = []
+    for v in venue_list: # Loop through the *filtered* list
+        avg_rating = Rating.objects.filter(
+            content_type=ContentType.objects.get_for_model(Venue),
+            object_id=v.id
+        ).aggregate(avg=Avg('score'))['avg'] or 0
+        
+        items.append({
+            'id': v.id,
+            'type': 'venue',
+            'name': v.name,
+            'city': v.city,
+            'address': v.address,
+            'thumbnail': getattr(v, 'image_url', None),
+            'detail_url': f"/venues/{v.id}/",
+            'avg_rating': round(avg_rating, 1),
+            'price_range': v.price_range, 
+            'user': v.user, 
+        })
+
+    context = {
+        'items': items,
+        'user': request.user,
+        'active_page': 'venues', 
+        # --- PASS SEARCH TERMS BACK TO TEMPLATE ---
+        'search_query': query,
+        'search_location': location,
+        'search_price': price,
+    }
+    return render(request, "venues.html", context)
 
 # Article views
 def create_article(request):

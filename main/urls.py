@@ -1,10 +1,17 @@
 from django.urls import path
 from main.views import show_main, ajax_article_form, ajax_event_form, ajax_venue_form, register_view, login_view, logout_view, ajax_delete, ajax_edit, ajax_cards, show_article, show_venue, show_event, about_view,rate_item
+from main.views import (
+    show_main, ajax_article_form, ajax_event_form, ajax_venue_form, 
+    register_view, login_view, logout_view, ajax_delete, ajax_edit, 
+    ajax_cards, show_article, show_venue, show_event, about_view,
+    rate_item, show_venues 
+)
 
 app_name = 'main'
 
 urlpatterns = [
     path('', show_main, name='show_main'),
+    path('venues/', show_venues, name='show_venues'),
     path('ajax_form/article/', ajax_article_form, name='ajax_article_form'),
     path('ajax_form/event/', ajax_event_form, name='ajax_event_form'),
     path('ajax_form/venue/', ajax_venue_form, name='ajax_venue_form'),
@@ -20,4 +27,13 @@ urlpatterns = [
     path('about/', about_view, name='about'),
     path('rate/', rate_item, name='rate_item'),
     
+]
+    
+    # --- THIS IS THE FIX ---
+    # Added a trailing slash to match the URL
+    path('venues/<uuid:id>/', show_venue, name='show_venue'), 
+    
+    path('events/<uuid:id>', show_event, name='show_event'),
+    path('about/', about_view, name='about'),
+    path('rate/', rate_item, name='rate_item'),
 ]
