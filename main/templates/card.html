@@ -1,51 +1,4 @@
 {% load static %}
-<<<<<<< HEAD
-
-<article class="venue-card" 
-         data-type="{{ item.type|default:'unknown' }}" 
-         data-id="{{ item.id|default:'0' }}">
-  
-  <div class="card-image">
-    {% if item.thumbnail %}
-      <img src="{{ item.thumbnail }}" 
-           alt="{% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}">
-    {% else %}
-      <img src="https://i.imgur.com/aQtTqXG.jpeg" 
-           alt="Placeholder Image">
-    {% endif %}
-  </div>
-
-  <div class="card-content">
-    
-    <div class="card-meta">
-      <span class="date">
-        {% if item.type == 'article' %}
-          {{ item.published_date|date:"d-m-Y" }}
-        {% elif item.type == 'event' %}
-          {{ item.date|date:"d-m-Y" }}
-        {% else %}
-          08-11-2021 {% endif %}
-      </span>
-      <span class="category">
-        | 
-        {% if item.type == 'article' and item.category %}
-          {{ item.category }}
-        {% elif item.type == 'venue' and item.city %}
-          {{ item.city }}
-        {% else %}
-          Category {% endif %}
-      </span>
-    </div>
-
-    <h3 class="card-title">
-      {% if item.title %}
-        {{ item.title }}
-      {% elif item.name %}
-        {{ item.name }}
-      {% else %}
-        Believing neglected so so allowance existence departure.
-      {% endif %}
-=======
 <style>
   .card {
     background: #fff;
@@ -228,7 +181,6 @@
       <a href="{{ item.detail_url }}">
         {% if item.title %}{{ item.title }}{% elif item.name %}{{ item.name }}{% endif %}
       </a>
->>>>>>> tkpbp/radit
     </h3>
 
     <p class="card-description">
