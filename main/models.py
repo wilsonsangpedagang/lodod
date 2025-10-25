@@ -12,18 +12,9 @@ class Venue(models.Model):
     contact = models.CharField(max_length=20, blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-
-    # Price range (text field, as you canceled the min/max change)
     price_range = models.CharField(max_length=100, blank=True, null=True, help_text="e.g., 100.000 - 300.000")
-
-    # --- ADD THIS FIELD BACK ---
     facilities = models.TextField(blank=True, null=True, help_text="Enter facilities separated by commas (e.g., Wifi, AC, Toilet)")
-    # --- END ADDITION ---
-
-    # Main image
     image_url = models.URLField(blank=True, null=True, verbose_name="Main Image URL")
-
-    # Gallery images
     image_url_2 = models.URLField(blank=True, null=True, verbose_name="Gallery Image 2 URL")
     image_url_3 = models.URLField(blank=True, null=True, verbose_name="Gallery Image 3 URL")
     image_url_4 = models.URLField(blank=True, null=True, verbose_name="Gallery Image 4 URL")
